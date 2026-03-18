@@ -17,4 +17,12 @@ export default {
   references: {
     title: '참고 자료',
   },
+  slides: {
+    title: '▶ 전체 슬라이드',
+    theme: {
+      layout: 'full',
+      sidebar: false,
+      toc: false,
+    },
+  },
 }
