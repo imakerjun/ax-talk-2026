@@ -18,7 +18,32 @@ title: "팀 → 자산: MCP로 AI 자산 중앙화"
 
 ---
 
+## 기존 방식 vs MCP stdio
+
+| | Agent Sync (기존) | MCP stdio |
+|---|---|---|
+| 자산 위치 | 각 IDE 설정 파일에 분산 | 중앙 패키지 하나에 집중 |
+| 공유 방식 | 문서로 공유 → 각자 복사 | `npm install` → 자동 적용 |
+| IDE 종속 | Cursor rules, Copilot instructions 등 각각 관리 | IDE 무관, 어디서든 동일 |
+| 버전 관리 | 없음 (최신이 어디인지 모름) | npm 버전으로 이력 추적 |
+| 업데이트 | 공지 → 각자 수동 반영 | `npm update` 한 줄 |
+
+---
+
 ## 해결: MCP stdio 기반 중앙화 + npm 배포
+
+패키지 구조:
+
+```
+central-mcp-agent/
+├── src/
+│   ├── prompts/          # 팀 공용 프롬프트
+│   ├── skills/           # 재사용 가능한 스킬
+│   ├── rules/            # 코드 컨벤션, 리뷰 규칙
+│   └── index.ts          # MCP stdio 서버 엔트리
+├── package.json
+└── README.md
+```
 
 - 팀의 AI 자산(프롬프트, 스킬, 규칙)을 하나의 패키지로 관리
 - `npm install` → Cursor, Claude Code 등 어떤 IDE에서든 자동으로 최신 자산 적용
@@ -26,11 +51,23 @@ title: "팀 → 자산: MCP로 AI 자산 중앙화"
 
 ---
 
+## 실제 사용 모습
+
+![Cursor에서 MCP 연결](/images/blog-mcp-cursor.png)
+
+![Claude Code에서 MCP 연결](/images/blog-mcp-claude.png)
+
+Cursor든 Claude Code든, 같은 MCP 패키지를 연결하면 **같은 자산**으로 작업한다.
+
+---
+
 ## 포인트
+
+> "공유가 아니라 **설치**로 전파한다."
 
 "잘 쓰는 사람의 노하우"가 패키지가 되면, 모든 팀원이 같은 수준으로 시작.
 
-공유가 아니라 **설치**로 전파.
+설치 한 줄이면 팀 전체의 AI 수준이 올라간다.
 
 **노하우가 패키지가 되면 — 그게 축적이다.**
 
