@@ -23,6 +23,8 @@ export function SlideView({ children }: { children: React.ReactNode }) {
   const [isDark, setIsDark] = useState(false)
   const contentRef = useRef<HTMLDivElement>(null)
   const slideRef = useRef<HTMLDivElement>(null)
+  const notesWindowRef = useRef<Window | null>(null)
+  const bcRef = useRef<BroadcastChannel | null>(null)
 
   // Sync dark mode with html class
   useEffect(() => {
@@ -100,11 +102,33 @@ export function SlideView({ children }: { children: React.ReactNode }) {
     }
   }, [getSlideGroups])
 
+  // Init BroadcastChannel + listen for nav from presenter
+  useEffect(() => {
+    const bc = new BroadcastChannel('slide-sync')
+    bcRef.current = bc
+    bc.onmessage = (e) => {
+      if (e.data.type === 'slide-nav') {
+        if (e.data.direction === 'next') {
+          setCurrentSlide((prev) => Math.min(prev + 1, slideCount - 1))
+        } else if (e.data.direction === 'prev') {
+          setCurrentSlide((prev) => Math.max(prev - 1, 0))
+        }
+      }
+    }
+    return () => bc.close()
+  }, [slideCount])
+
+  // Sync hash + broadcast when slide changes
   useEffect(() => {
     if (isSlideMode) {
       setSlideHash(currentSlide + 1)
+      bcRef.current?.postMessage({
+        type: 'slide-change',
+        slideNumber: currentSlide + 1,
+        totalSlides: slideCount,
+      })
     }
-  }, [isSlideMode, currentSlide])
+  }, [isSlideMode, currentSlide, slideCount])
 
   useEffect(() => {
     const handleHashChange = () => {
@@ -143,6 +167,24 @@ export function SlideView({ children }: { children: React.ReactNode }) {
         setChromeHidden((prev) => !prev)
       } else if (e.key === 'd' || e.key === 'D') {
         setIsDark((prev) => !prev)
+      } else if (e.key === 'n' || e.key === 'N') {
+        if (!notesWindowRef.current || notesWindowRef.current.closed) {
+          notesWindowRef.current = window.open(
+            '/presenter',
+            'presenter-notes',
+            'width=500,height=700,left=0,top=0',
+          )
+        } else {
+          notesWindowRef.current.focus()
+        }
+        // Send current state immediately
+        setTimeout(() => {
+          bcRef.current?.postMessage({
+            type: 'slide-change',
+            slideNumber: currentSlide + 1,
+            totalSlides: slideCount,
+          })
+        }, 500)
       }
     }
     window.addEventListener('keydown', handleKeyDown)
