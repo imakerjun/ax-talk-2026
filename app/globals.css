@@ -196,6 +196,8 @@ article strong {
   padding: 10px 32px;
   border-bottom: 1px solid var(--notion-border, #e3e2de);
   flex-shrink: 0;
+  transition: height 0.25s, padding 0.25s, opacity 0.25s;
+  overflow: hidden;
 }
 
 .slide-counter {
@@ -222,21 +224,39 @@ article strong {
 /* Slide content frame — optimized for presentation */
 .slide-frame {
   flex: 1;
-  overflow-y: auto;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 60px 120px;
+  padding: 40px 120px;
   max-width: 1100px;
   margin: 0 auto;
   width: 100%;
   font-size: 1.35rem;
   line-height: 1.75;
   color: var(--notion-text, #37352f);
+  transition: padding 0.25s;
+}
+/* Chrome hidden: controls & nav collapse, frame expands */
+.slide-chrome-hidden .slide-controls {
+  height: 0;
+  padding: 0;
+  border: none;
+  overflow: hidden;
+}
+.slide-chrome-hidden .slide-nav {
+  height: 0;
+  padding: 0;
+  border: none;
+  overflow: hidden;
+}
+.slide-chrome-hidden .slide-frame {
+  padding: 24px 80px;
 }
 .slide-frame h1 {
   font-size: 3rem;
   font-weight: 700;
+  margin-top: 0;
   margin-bottom: 20px;
   line-height: 1.2;
   letter-spacing: -0.03em;
@@ -294,10 +314,10 @@ article strong {
 }
 .slide-frame img {
   max-width: 100%;
-  max-height: 65vh;
+  max-height: 45vh;
   object-fit: contain;
   border-radius: 6px;
-  border: 1px solid var(--notion-border, #e3e2de);
+  border: none;
   display: block;
   margin: 8px auto;
 }
@@ -317,6 +337,18 @@ article strong {
   max-height: 75vh;
   margin: auto;
 }
+/* Table inside slides: images fit within cells */
+.slide-frame table img {
+  max-height: 30vh;
+  margin: 4px 0;
+  border-radius: 4px;
+}
+.slide-frame table td:first-child {
+  white-space: nowrap;
+  font-weight: 600;
+  vertical-align: middle;
+  width: 120px;
+}
 
 /* Slide navigation */
 .slide-nav {
@@ -326,6 +358,8 @@ article strong {
   padding: 12px 32px;
   border-top: 1px solid var(--notion-border, #e3e2de);
   flex-shrink: 0;
+  transition: height 0.25s, padding 0.25s, opacity 0.25s;
+  overflow: hidden;
 }
 
 .slide-nav-btn {
